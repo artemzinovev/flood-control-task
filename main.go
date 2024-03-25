@@ -28,18 +28,20 @@ func main() {
 	floodControl := service.NewFloodControlService(RequestCountRepository, cfg.RequestLimit)
 
 	for {
-		ok, err := floodControl.Check(context.Background(), 1)
-		if err != nil {
-			log.Error("error", err)
-			os.Exit(1)
-		}
+		go func() {
+			ok, err := floodControl.Check(context.Background(), 3)
+			if err != nil {
+				log.Error("error", err)
+				os.Exit(1)
+			}
 
-		if !ok {
-			log.Info("flood control failed")
-			os.Exit(1)
-		}
+			if !ok {
+				log.Info("flood control failed")
+				os.Exit(1)
+			}
 
-		log.Info("flood control passed")
+			log.Info("flood control passed")
+		}()
 	}
 
 }

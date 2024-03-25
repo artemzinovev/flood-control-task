@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"sync"
 	"task/internal/repository"
 )
 
@@ -16,6 +17,7 @@ type FloodControlService struct {
 	floodRepository RequestCountRepository
 
 	requestLimit int
+	mu           sync.Mutex
 }
 
 func NewFloodControlService(
@@ -25,11 +27,15 @@ func NewFloodControlService(
 	return &FloodControlService{
 		floodRepository: floodRepository,
 		requestLimit:    requestLimit,
+		mu:              sync.Mutex{},
 	}
 }
 
 func (s *FloodControlService) Check(ctx context.Context, userID int64) (bool, error) {
 	const op = "service.FloodControlService.Check"
+
+	s.mu.Lock()
+	defer s.mu.Unlock()
 
 	requestCount, err := s.floodRepository.Get(ctx, userID)
 	if err != nil {
