@@ -1,0 +1,5 @@
+redis_config:
+  address: localhost:6379
+  db: 0
+  redis_ttl: 60s
+request_limit: 10
