@@ -29,7 +29,13 @@ func main() {
 
 	for {
 		go func() {
-			ok, err := floodControl.Check(context.Background(), 3)
+			ok, err := floodControl.Check(context.Background(), 5)
+			if err != nil {
+				log.Error("error", err)
+				os.Exit(1)
+			}
+
+			err = floodControl.AddRequest(context.Background(), 5)
 			if err != nil {
 				log.Error("error", err)
 				os.Exit(1)
